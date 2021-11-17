@@ -150,3 +150,22 @@ This build provides the ability to pass environment variables into the yaml inst
 This is needed in order to avoid having plain text credentials on disk
 
 Additionally, this build dynamically builds for alpine and includes more tools to troubleshoot and includes the azure cli.
+
+Example:
+
+```yaml
+if_mib:
+  version: 3
+  auth:
+    #Use [$env.yourenvironmentvariable] to do realtime replace
+    username: $env.SNMP-EXPORTER-USERNAME # Required, no default. -u option to NetSNMP.
+    security_level: $env.SNMP-SECURITY-LEVEL  # Defaults to noAuthNoPriv. -l option to NetSNMP.
+                                  # Can be noAuthNoPriv, authNoPriv or authPriv.
+    password: $env.SNMP-EXPORTER-PASSWORD  # Has no default. Also known as authKey, -A option to NetSNMP.
+                    # Required if security_level is authNoPriv or authPriv.
+    auth_protocol: $env.SNMP-EXPORTER-AUTH-PROTOCOL  # MD5, SHA, SHA224, SHA256, SHA384, or SHA512. Defaults to MD5. -a option to NetSNMP.
+                        # Used if security_level is authNoPriv or authPriv.
+    priv_protocol: $env.SNMP-EXPORTER-PRIV-PROTOCOL  # DES, AES, AES192, or AES256. Defaults to DES. -x option to NetSNMP.
+                        # Used if security_level is authPriv.
+    priv_password: $env.SNMP-EXPORTER-PRIV-PASSWORD # Has no default. Also known as privKey, -X option to NetSNMP.
+```
