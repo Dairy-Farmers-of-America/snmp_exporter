@@ -16,7 +16,9 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/gosnmp/gosnmp"
@@ -28,6 +30,7 @@ func LoadFile(filename string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	cfg := &Config{}
 	err = yaml.UnmarshalStrict(content, cfg)
 	if err != nil {
@@ -77,14 +80,36 @@ type Module struct {
 	WalkParams WalkParams `yaml:",inline"`
 }
 
+//Custom to pull value from environment variable from env varible string
+func replace_env_variable_secret(secret Secret) Secret {
+	var string_value = replace_env_variable_string(string(secret))
+	return Secret(string_value)
+}
+func replace_env_variable_string(secret string) string {
+	if strings.HasPrefix(secret, "$env.") {
+		var env_var_name = strings.Split(secret, ".")[1]
+		var value = os.Getenv(env_var_name)
+		fmt.Printf("Parsed environment variable [%v]\n", env_var_name)
+		return value
+	}
+	return secret
+}
+
 func (c *Module) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	*c = DefaultModule
 	type plain Module
 	if err := unmarshal((*plain)(c)); err != nil {
 		return err
 	}
-
 	wp := c.WalkParams
+
+	//Custom - Parse environment variables for these configs
+	wp.Auth.Username = replace_env_variable_string(wp.Auth.Username)
+	wp.Auth.SecurityLevel = replace_env_variable_string(wp.Auth.SecurityLevel)
+	wp.Auth.AuthProtocol = replace_env_variable_string(wp.Auth.AuthProtocol)
+	wp.Auth.PrivProtocol = replace_env_variable_string(wp.Auth.PrivProtocol)
+	wp.Auth.Password = replace_env_variable_secret(wp.Auth.Password)
+	wp.Auth.PrivPassword = replace_env_variable_secret(wp.Auth.PrivPassword)
 
 	if wp.Version < 1 || wp.Version > 3 {
 		return fmt.Errorf("SNMP version must be 1, 2 or 3. Got: %d", wp.Version)

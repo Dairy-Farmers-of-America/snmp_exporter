@@ -143,3 +143,10 @@ effects.
 
 If you need to disable this feature for non-Prometheus systems, use the
 command line flag `--no-snmp.wrap-large-counters`.
+
+# Customizations
+
+This build provides the ability to pass environment variables into the yaml instead of plaintext.
+This is needed in order to avoid having plain text credentials on disk
+
+Additionally, this build dynamically builds for alpine and includes more tools to troubleshoot and includes the azure cli.
