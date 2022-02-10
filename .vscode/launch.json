@@ -10,7 +10,15 @@
             "request": "launch",
             "mode": "auto",
             "program": "./main.go",
-            "args": ["--config.file=./snmp.yml"]
+            "args": ["--config.file=./snmp.yml"],
+            "env": {
+                "SNMP-EXPORTER-USERNAME": "test",
+                "SNMP-SECURITY-LEVEL":"authPriv",
+                "SNMP-EXPORTER-AUTH-PROTOCOL":"SHA",
+                "SNMP-EXPORTER-PRIV-PROTOCOL":"AES",
+                "SNMP-EXPORTER-PASSWORD":"test",
+                "SNMP-EXPORTER-PRIV-PASSWORD":"test"
+            },
         }
     ]
 }
