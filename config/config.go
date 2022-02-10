@@ -101,15 +101,16 @@ func (c *Module) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	if err := unmarshal((*plain)(c)); err != nil {
 		return err
 	}
-	wp := c.WalkParams
 
 	//Custom - Parse environment variables for these configs
-	wp.Auth.Username = replace_env_variable_string(wp.Auth.Username)
-	wp.Auth.SecurityLevel = replace_env_variable_string(wp.Auth.SecurityLevel)
-	wp.Auth.AuthProtocol = replace_env_variable_string(wp.Auth.AuthProtocol)
-	wp.Auth.PrivProtocol = replace_env_variable_string(wp.Auth.PrivProtocol)
-	wp.Auth.Password = replace_env_variable_secret(wp.Auth.Password)
-	wp.Auth.PrivPassword = replace_env_variable_secret(wp.Auth.PrivPassword)
+	c.WalkParams.Auth.Username = replace_env_variable_string(c.WalkParams.Auth.Username)
+	c.WalkParams.Auth.SecurityLevel = replace_env_variable_string(c.WalkParams.Auth.SecurityLevel)
+	c.WalkParams.Auth.AuthProtocol = replace_env_variable_string(c.WalkParams.Auth.AuthProtocol)
+	c.WalkParams.Auth.PrivProtocol = replace_env_variable_string(c.WalkParams.Auth.PrivProtocol)
+	c.WalkParams.Auth.Password = replace_env_variable_secret(c.WalkParams.Auth.Password)
+	c.WalkParams.Auth.PrivPassword = replace_env_variable_secret(c.WalkParams.Auth.PrivPassword)
+
+	wp := c.WalkParams
 
 	if wp.Version < 1 || wp.Version > 3 {
 		return fmt.Errorf("SNMP version must be 1, 2 or 3. Got: %d", wp.Version)
